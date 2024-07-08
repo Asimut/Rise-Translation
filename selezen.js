@@ -1,4 +1,3 @@
-<script type="text/javascript">
   function createGoogleTranslateWidget() {
       const translateDiv = document.createElement('div');
       translateDiv.id = 'google_translate_element';
@@ -69,4 +68,3 @@
       .VIpgJd-ZVi9od-aZ2wEe-wOHMyf.VIpgJd-ZVi9od-aZ2wEe-wOHMyf-ti6hGc { display: none !important; }
   `;
   document.head.appendChild(style);
-</script>
