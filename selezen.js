@@ -1,5 +1,6 @@
 <script type="text/javascript">
- 
+
+
 let isInitialized = false;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -12,10 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   isInitialized = true;
 
- 
+  
   let currentLanguage = localStorage.getItem('selectedLanguage') || 'uk';
   let googleTranslateInitialized = false;
-
 
   function cleanupExistingSwitchers() {
     const elements = [
@@ -44,18 +44,17 @@ document.addEventListener('DOMContentLoaded', function() {
       host = host.replace('www.', '');
     }
 
-
+ 
     document.cookie = 'googtrans=; path=/; domain=' + host + '; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.cookie = 'googtrans=; path=/; domain=.' + host + '; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-
 
     document.cookie = `googtrans=${googTransValue}; path=/; domain=.${host};`;
     document.cookie = `googtrans=${googTransValue}; path=/;`;
 
     console.log('[DEBUG] setGoogleTransCookie:', googTransValue, ' domain=', host);
     
-
+ 
     window.location.reload();
   }
 
@@ -99,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function createLanguageSwitcher() {
-
+   
     const existing = document.querySelector('.language-switcher');
     if (existing) {
       existing.remove();
@@ -338,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Наблюдатель за изменениями в DOM
+
   let observer;
   function startObserver() {
     if (observer) {
@@ -355,10 +354,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Запускаем наблюдение
+
   startObserver();
   
-  // Запускаем первичную проверку
+
   checkReadiness();
 
   // Очистка при уничтожении страницы
@@ -369,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
     cleanupExistingSwitchers();
   });
 
-  // Обработка сообщений Rise
+
   window.addEventListener('message', function(event) {
     if (event.data && event.data.type === 'languageChanged') {
       localStorage.setItem('selectedLanguage', event.data.language);
