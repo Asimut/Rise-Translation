@@ -1,6 +1,3 @@
-<script type="text/javascript">
-
-
 let isInitialized = false;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -375,4 +372,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-</script>
+
