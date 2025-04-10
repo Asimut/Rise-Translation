@@ -1,4 +1,4 @@
-// Немедленно выполняем самый приоритетный код перед DOMContentLoaded
+// 1.Немедленно выполняем самый приоритетный код перед DOMContentLoaded
 // Блокируем языки на самом раннем этапе
 (function() {
   // Глобальный флаг для отслеживания пользовательских действий
@@ -264,6 +264,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       } catch(e) { console.error('[DEBUG] Error removing Google logo:', e); }
     });
+  }
+
+  // Функция для полного удаления и блокировки логотипа Google Translate
+  function removeGoogleBranding() {
+    // Удаление элементов Google Translate
+    const googleElements = document.querySelectorAll(`
+      .goog-te-gadget-icon,
+      .goog-te-gadget-simple,
+      .goog-te-gadget,
+      .goog-te-menu-value,
+      .goog-logo-link,
+      .goog-te-banner,
+      #goog-gt-,
+      .goog-te-banner-frame,
+      .skiptranslate,
+      .goog-tooltip,
+      .goog-tooltip:hover,
+      .goog-text-highlight,
+      .trans-target-highlighted,
+      .VIpgJd-ZVi9od-l4eHX-hSRGPd,
+      .VIpgJd-ZVi9od-aZ2wEe-wOHMyf
+    `);
+
+    googleElements.forEach(el => {
+      try {
+        if (el) {
+          el.style.display = 'none';
+          el.style.visibility = 'hidden';
+          el.style.opacity = '0';
+          el.style.height = '0';
+          el.style.width = '0';
+          el.style.position = 'absolute';
+          el.style.left = '-9999px';
+        }
+      } catch(e) { console.error('[DEBUG] Error removing Google element:', e); }
+    });
+    
+    // Сбрасываем стили для body
+    document.body.style.position = 'static';
+    document.body.style.top = '0';
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
   }
 
   // Функция для полного сброса переводчика в случае проблем
@@ -723,10 +765,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       switcherContainer.classList.remove('active');
       
-      // Скрываем логотип Google до смены языка
-      forceHideGoogleBanner();
+      // Сначала выполняем предварительную очистку до переключения
+      removeGoogleBranding();
       
-      // Прямая манипуляция с Google Translate до перезагрузки
+      // Прямая манипуляция с Google Translate
       try {
         if (window.google && window.google.translate) {
           const combo = document.querySelector('.goog-te-combo');
@@ -744,8 +786,11 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('[DEBUG] Error during direct manipulation:', e);
       }
 
+      // Используем несколько волн очистки после переключения
+      setTimeout(removeGoogleBranding, 100);
+      setTimeout(removeGoogleBranding, 500);
+      
       // Используем небольшую задержку перед установкой куки
-      // Сбрасываем флаг пользовательского переключения через короткое время
       setTimeout(function() {
         // Устанавливаем куки на всякий случай для поддержки Google Translate
         switch (lang.code) {
@@ -759,6 +804,9 @@ document.addEventListener('DOMContentLoaded', function() {
             setGoogleTransCookie('uk', 'en');
             break;
         }
+        
+        // Последняя волна очистки после установки куки
+        setTimeout(removeGoogleBranding, 1000);
         
         // Сбрасываем флаг после установки куки и перезагрузки
         setTimeout(function() {
@@ -1149,4 +1197,15 @@ document.addEventListener('DOMContentLoaded', function() {
       resetTranslator();
     }
   });
+  
+  // Запускаем полное удаление логотипов при загрузке
+  removeGoogleBranding();
+  
+  // Запускаем с интервалами для предотвращения появления логотипа
+  setTimeout(removeGoogleBranding, 500);
+  setTimeout(removeGoogleBranding, 1000);
+  setTimeout(removeGoogleBranding, 2000);
+  
+  // Регулярная проверка и удаление
+  setInterval(removeGoogleBranding, 5000);
 });
