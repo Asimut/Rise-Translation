@@ -1,5 +1,4 @@
-
-// 11.04.Немедленно выполняем самый приоритетный код перед DOMContentLoaded
+// 11.04.2025 Немедленно выполняем самый приоритетный код перед DOMContentLoaded
 // Блокируем языки на самом раннем этапе
 (function() {
   // Глобальный флаг для отслеживания пользовательских действий
@@ -958,6 +957,11 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
       item.addEventListener('click', (e) => {
         e.stopPropagation();
+        // Сразу обновляем localStorage
+        console.log("[DEBUG] User clicked language:", lang.code);
+        localStorage.setItem('userChangedLanguage', 'true');
+        localStorage.setItem('selectedLanguage', lang.code);
+        // Затем вызываем changeLanguage
         changeLanguage(lang);
       });
       dropdownContent.appendChild(item);
