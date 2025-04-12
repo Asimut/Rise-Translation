@@ -1,57 +1,17 @@
-// Немедленно выполняемая функция для предотвращения влияния на глобальное пространство имен
-(function() {
-  // Ключ для хранения языка в localStorage
-  const LANGUAGE_STORAGE_KEY = 'selectedLanguage';
-  
-  // Глобальная переменная для хранения статуса инициализации
-  window.__translationInitialized = false;
-
-  // Принудительно устанавливаем украинский язык при первой загрузке
-  function initializeLanguageSettings() {
-    let currentLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+document.addEventListener('DOMContentLoaded', function() {
+    // Принудительно устанавливаем украинский язык при первой загрузке
+    let currentLanguage = localStorage.getItem('selectedLanguage');
     if (!currentLanguage) {
-      localStorage.setItem(LANGUAGE_STORAGE_KEY, 'uk');
+      localStorage.setItem('selectedLanguage', 'uk');
       currentLanguage = 'uk';
     }
     
-    // Устанавливаем язык HTML напрямую
-    document.documentElement.lang = currentLanguage;
-    
-    return currentLanguage;
-  }
-  
-  // Инициализируем язык до загрузки DOM
-  const currentLanguage = initializeLanguageSettings();
-  
-  // Стили, добавляемые немедленно для предотвращения мигания
-  const preStyles = document.createElement('style');
-  preStyles.textContent = `
-    /* Предотвращение мигания при загрузке Google Translate */
-    body {
-      top: 0 !important;
-      transition: none !important;
-    }
-    
-    .skiptranslate, .goog-te-banner-frame {
-      display: none !important;
-      visibility: hidden !important;
-    }
-    
-    /* Блокируем автоматический запуск Google Translate */
-    .VIpgJd-ZVi9od-l4eHX-hSRGPd {
-      display: none !important;
-    }
-  `;
-  document.head.appendChild(preStyles);
-  
-  // Основной код, выполняемый после загрузки DOM
-  document.addEventListener('DOMContentLoaded', function() {
     let googleTranslateInitialized = false;
-    let forceUkrainianOnLoad = true;
-
+    let forceUkrainianOnLoad = true; // Флаг для принудительной установки украинского языка
+  
     console.log('[DEBUG] Language monitor started');
     console.log('[DEBUG] User previously changed language. Setting to saved preference:', currentLanguage);
-
+  
     const INTERFACE_TRANSLATIONS = {
       start: {
         uk: 'РОЗПОЧАТИ',
@@ -59,7 +19,7 @@
         en: 'START'
       }
     };
-
+  
     // Отслеживание изменений HTML для определения изменения языка
     const htmlObserver = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
@@ -78,13 +38,14 @@
         }
       });
     });
-
+  
     // Функция для прямого взаимодействия с LMS
     function setLanguage(langCode) {
       console.log('[DEBUG] Change language to:', langCode);
       
       // Обновляем текущий язык
-      localStorage.setItem(LANGUAGE_STORAGE_KEY, langCode);
+      localStorage.setItem('selectedLanguage', langCode);
+      currentLanguage = langCode;
       
       // Обновляем UI переключателя языков
       const switcherContainer = document.querySelector('.language-switcher');
@@ -132,9 +93,6 @@
         console.log('[DEBUG] Translation cache bypass complete:', Date.now());
       }
       
-      // Установка cookie для Google Translate
-      document.cookie = `googtrans=/uk/${langCode}; domain=${window.location.hostname}; path=/`;
-      
       // Прямое взаимодействие с LMS
       try {
         // Для Articulate Rise
@@ -158,7 +116,7 @@
         console.error('[DEBUG] Error interacting with LMS:', e);
       }
     }
-
+  
     function updateStartButton(langCode) {
       setTimeout(() => {
         const startButton = document.querySelector('.start-button');
@@ -167,18 +125,18 @@
         }
       }, 300);
     }
-
+  
     function createGoogleTranslateWidget() {
       try {
         if (document.getElementById('google_translate_element')) {
           return;
         }
-
+  
         const translateDiv = document.createElement('div');
         translateDiv.id = 'google_translate_element';
         translateDiv.style.display = 'none';
         document.body.appendChild(translateDiv);
-
+  
         if (!googleTranslateInitialized) {
           const script1 = document.createElement('script');
           script1.type = 'text/javascript';
@@ -191,11 +149,15 @@
             // Устанавливаем начальный язык после загрузки Google Translate
             setTimeout(() => {
               console.log('[DEBUG] Initializing with default Ukrainian language');
-              // Принудительно устанавливаем выбранный язык
-              setLanguage(currentLanguage);
+              // Принудительно устанавливаем украинский, если не указан другой язык
+              if (currentLanguage !== 'uk') {
+                setLanguage(currentLanguage);
+              } else {
+                setLanguage('uk');
+              }
             }, 500);
           };
-
+  
           if (!window.googleTranslateElementInit) {
             window.googleTranslateElementInit = function() {
               new google.translate.TranslateElement({
@@ -206,15 +168,15 @@
               }, 'google_translate_element');
             }
           }
-
+  
           document.body.appendChild(script1);
         }
-
+  
       } catch (error) {
         console.error('[DEBUG] Error creating Google Translate widget:', error);
       }
     }
-
+  
     function createLanguageSwitcher() {
       const switcherContainer = document.createElement('div');
       switcherContainer.className = 'language-switcher';
@@ -447,7 +409,7 @@
         targetDiv.parentNode.insertBefore(switcherContainer, targetDiv.nextSibling);
       }
     }
-
+  
     function checkReadiness() {
       const targetElement = document.querySelector('.cover__header-content-title');
       if (targetElement) {
@@ -459,26 +421,26 @@
         }
       }
     }
-
+  
     // Наблюдаем за изменениями атрибута lang у HTML
     htmlObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['lang']
     });
-
+  
     console.log('[DEBUG] Multi-target observer setup complete');
-
+  
     const observer = new MutationObserver((mutations) => {
       checkReadiness();
     });
-
+  
     observer.observe(document.body, {
       childList: true,
       subtree: true
     });
-
+  
     checkReadiness();
-
+  
     // Обработка сообщений от LMS
     window.addEventListener('message', function(event) {
       if (event.data && event.data.type === 'languageChanged') {
@@ -486,23 +448,4 @@
         setLanguage(event.data.language);
       }
     });
-    
-    // Устанавливаем флаг, что инициализация завершена
-    window.__translationInitialized = true;
   });
-
-  // Функция для немедленной установки начального языка
-  function preInitialize() {
-    // Устанавливаем атрибут lang для HTML, чтобы предотвратить автоматическое определение языка
-    document.documentElement.lang = currentLanguage;
-    
-    // Блокируем автоматический запуск Google Translate до инициализации нашего скрипта
-    const metaNoTranslate = document.createElement('meta');
-    metaNoTranslate.name = 'google';
-    metaNoTranslate.content = 'notranslate';
-    document.head.appendChild(metaNoTranslate);
-  }
-  
-  // Запускаем предварительную инициализацию
-  preInitialize();
-})();
