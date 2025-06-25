@@ -90,9 +90,9 @@
       const switcherContainer = document.querySelector('.language-switcher');
       if (switcherContainer) {
         const languages = [
-          { code: 'uk', name: 'Українська', flag: 'https://static-00.iconduck.com/assets.00/ua-flag-icon-512x341-7m10uaq7.png' },
-          { code: 'pl', name: 'Polski', flag: 'https://static-00.iconduck.com/assets.00/poland-icon-512x384-wgplvl6f.png' },
-          { code: 'en', name: 'English', flag: 'https://static-00.iconduck.com/assets.00/united-states-icon-512x384-m15d49um.png' }
+          { code: 'uk', name: 'Українська', flag: 'https://cdn-icons-png.flaticon.com/512/3373/3373317.png' },
+          { code: 'pl', name: 'Polski', flag: 'https://cdn-icons-png.flaticon.com/512/2151/2151365.png' },
+          { code: 'en', name: 'English', flag: 'https://cdn-icons-png.flaticon.com/512/206/206626.png' }
         ];
         
         const currentLangData = languages.find(lang => lang.code === langCode) || languages[0];
